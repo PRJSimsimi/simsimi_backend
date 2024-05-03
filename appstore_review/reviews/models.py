@@ -1,8 +1,10 @@
 from django.db import models
+from django.core.validators import MinValueValidator, MaxValueValidator
 
 class customer_reviews(models.Model):
     id = models.CharField(max_length=255, primary_key=True)  # 리뷰 고유 ID
-    rating = models.IntegerField()  # 별점 (1~5)
+    # rating = models.IntegerField()  # 별점 (1~5)
+    rating = models.IntegerField(validators=[MinValueValidator(1), MaxValueValidator(5)])  # 별점 (1~5)
     reviewer_nickname = models.CharField(max_length=255)  # 작성자 닉네임
     title = models.CharField(max_length=255)  # 리뷰 제목
     body = models.TextField()  # 리뷰 본문

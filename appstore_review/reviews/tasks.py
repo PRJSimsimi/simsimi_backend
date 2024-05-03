@@ -1,12 +1,21 @@
 from .models import customer_reviews
 from .api import fetch_reviews
 from datetime import datetime
+import logging
+
+# logging.basicConfig(level=logging.INFO)
+logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(message)s")
+
 
 def store_reviews_in_db():
     reviews = fetch_reviews()
 
-    processed_data = [
-      {
+    # Process the data
+    processed_data = []
+
+    for review in reviews["data"]:
+      try:
+        processed_data.append({
           "id": review["id"],
           "rating": review["attributes"]["rating"],
           "reviewer_nickname": review["attributes"]["reviewerNickname"],
@@ -14,9 +23,22 @@ def store_reviews_in_db():
           "body": review["attributes"]["body"],
           "created_date": review["attributes"]["createdDate"],
           "territory": review["attributes"]["territory"],
-      }
-      for review in reviews["data"]
-    ]
+        })
+      except KeyError as e:
+        logging.error(f"Failed to process review: {review}. Error: {e}")
+
+    # processed_data = [
+    #   {
+    #       "id": review["id"],
+    #       "rating": review["attributes"]["rating"],
+    #       "reviewer_nickname": review["attributes"]["reviewerNickname"],
+    #       "title": review["attributes"]["title"],
+    #       "body": review["attributes"]["body"],
+    #       "created_date": review["attributes"]["createdDate"],
+    #       "territory": review["attributes"]["territory"],
+    #   }
+    #   for review in reviews["data"]
+    # ]
 
 
     for review in processed_data:
