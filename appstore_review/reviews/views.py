@@ -9,7 +9,17 @@ from .tasks import store_reviews_in_db
 def get_reviews(request):
   store_reviews_in_db()
 
+  rating = request.GET.get('rating')
+  start_date = request.GET.get('start_date')
+  end_date = request.GET.get('end_date')
+
   reviews = customer_reviews.objects.all()
+
+  # 필터링
+  if rating:
+      reviews = reviews.filter(rating=rating)
+  if start_date and end_date:
+      reviews = reviews.filter(created_date__range=[start_date, end_date])
 
   # 페이징 처리
   page = request.GET.get('page', 1)
