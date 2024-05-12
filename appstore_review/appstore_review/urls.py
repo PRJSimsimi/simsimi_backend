@@ -16,9 +16,15 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from reviews.views import get_reviews
+# from reviews.views import get_reviews, get_responses_for_review, save_selected_response, ReviewListView, analyze_reviews
+from reviews.views import get_responses_for_review, save_selected_response, ReviewListView, analyze_reviews
+
 
 urlpatterns = [
     path('admin/', admin.site.urls),    
-    path('reviews/', get_reviews, name='get_reviews'),
+    # path('reviews/', get_reviews, name='get_reviews'),
+    path('reviews/', ReviewListView.as_view(), name='review-list'),
+    path('get_responses/<str:review_id>/', get_responses_for_review, name='get_responses'),
+    path('save_response/', save_selected_response, name='save_response'),    
+    path('reviews/analytics/', analyze_reviews, name='reviews-analytics'),
 ]
