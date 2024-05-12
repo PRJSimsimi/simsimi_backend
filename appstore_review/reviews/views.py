@@ -31,6 +31,37 @@ class ReviewListView(ListAPIView):
     filterset_class = ReviewFilter
 
 
+def analyze_reviews(request):
+    """
+    리뷰 데이터를 분석하여 통계를 반환하는 API
+    """
+    try:
+        # DB에서 리뷰 데이터를 가져오기
+        reviews = list(customer_reviews.objects.all().values())
+
+        if not reviews:
+            return JsonResponse({"message": "No reviews found."}, status=404)
+
+        # Pandas DataFrame으로 변환
+        df = pd.DataFrame(reviews)
+
+        # 분석 데이터 생성
+        analysis = {
+            "average_rating": round(df["rating"].mean(), 2),
+            "total_reviews": len(df),
+            "reviews_per_territory": df["territory"].value_counts().to_dict(),
+            "top_reviewers": df["reviewer_nickname"].value_counts().head(5).to_dict(),
+            "rating_distribution": df["rating"].value_counts().to_dict(),
+            "latest_review": df.loc[df["created_date"].idxmax()].to_dict()
+        }
+
+        return JsonResponse(analysis, safe=False)
+    
+    except Exception as e:
+        logger.error(f"Error analyzing reviews: {e}")
+        return JsonResponse({"error": str(e)}, status=500)
+
+
 # 리뷰별 자동 답변 생성
 def get_responses_for_review(request, review_id):
     """
