@@ -7,7 +7,7 @@ from django.http import JsonResponse
 from googletrans import Translator 
 
 from .models import customer_reviews
-from .tasks import fetch_and_store_reviews 
+from .tasks import fetch_and_store_reviews, fetch_and_store_reviews_async
 from .llama3_utils import generate_responses
 from .filters import ReviewFilter
 from .serializers import ReviewSerializer
@@ -133,103 +133,6 @@ def save_selected_response(request):
     return JsonResponse({"error": "Invalid request method"}, status=405)
 
 
-
-
-
-
-# # 유틸리티 함수: 페이징 처리
-# def paginate_queryset(queryset, page, page_size=10):
-#     paginator = Paginator(queryset, page_size)
-#     current_page = paginator.get_page(page)
-#     return current_page, paginator.num_pages
-
-# # 유틸리티 함수: 리뷰 데이터를 JSON으로 변환
-# def serialize_reviews(reviews):
-#     return [
-#         {
-#             "id": review.id,
-#             "rating": review.rating,
-#             "reviewer_nickname": review.reviewer_nickname,
-#             "title": review.title,
-#             "body": review.body,
-#             "created_date": review.created_date,
-#             "territory": review.territory,
-#         }
-#         for review in reviews
-#     ]
-
-# # 리뷰 목록 조회
-# def get_reviews(request):
-#     """
-#     리뷰 데이터 조회 및 필터링/페이징 처리
-#     """
-#     # 비동기 작업 실행 (필요에 따라 활성화)
-#     # fetch_and_store_reviews.delay()
-
-#     # 요청 필터 
-#     rating = request.GET.get('rating')
-#     start_date = request.GET.get('start_date')
-#     end_date = request.GET.get('end_date')
-#     page = request.GET.get('page', 1)
-
-#     # 리뷰 쿼리셋
-#     reviews = customer_reviews.objects.all()
-
-#     # 필터링
-#     if rating:
-#         reviews = reviews.filter(rating=rating)
-#     if start_date and end_date:
-#         try:
-#             start_date = parse_datetime(start_date)
-#             end_date = parse_datetime(end_date)
-#             reviews = reviews.filter(created_date__range=[start_date, end_date])
-#         except ValueError as e:
-#             return JsonResponse({"error": "Invalid date format"}, status=400)
-
-#     # 페이징 처리
-#     current_page, total_pages = paginate_queryset(reviews, page)
-
-#     # 데이터 직렬화 및 응답
-#     data = serialize_reviews(current_page)
-#     return JsonResponse({"reviews": data, "total_pages": total_pages}, safe=False)
-
-
-
-
-
-# def get_reviews(request):
-# #   fetch_and_store_reviews.delay()
-#   fetch_and_store_reviews()
-
-#   rating = request.GET.get('rating')
-#   start_date = request.GET.get('start_date')
-#   end_date = request.GET.get('end_date')
-
-#   reviews = customer_reviews.objects.all()
-#   print(reviews)
-
-#   # 필터링
-#   if rating:
-#       reviews = reviews.filter(rating=rating)
-#   if start_date and end_date:
-#       reviews = reviews.filter(created_date__range=[start_date, end_date])
-
-#   # 페이징 처리
-#   page = request.GET.get('page', 1)
-#   paginator = Paginator(reviews, 10)  # 페이지당 10개
-#   current_page = paginator.get_page(page)
-
-#   data = [
-#       {
-#           "id": review.id,  # 리뷰 고유 ID
-#           "rating": review.rating,  # 별점
-#           "reviewer_nickname": review.reviewer_nickname,  # 작성자 닉네임
-#           "title": review.title,  # 리뷰 제목
-#           "body": review.body,  # 리뷰 본문
-#           "created_date": review.created_date,  # 작성일
-#           "territory": review.territory,  # 지역 코드
-#       }
-#       for review in current_page
-#   ]
-#   return JsonResponse({"reviews": data, "total_pages": paginator.num_pages}, safe=False)
-
+def trigger_review_sync(request):
+    fetch_and_store_reviews_async.delay()
+    return JsonResponse({"status": "Sync initiated"})
