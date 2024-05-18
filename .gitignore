@@ -4,3 +4,13 @@ AppleConnect_AuthKey_G54BYZM5WR.p8
 
 **/migrations/
 **/__pycache__/
+
+appstore_review/simsimireviewsAnswer.csv
+
+appstore_review/celerybeat-schedule.bak
+appstore_review/celerybeat-schedule.dat
+appstore_review/celerybeat-schedule.dir
+appstore_review/debug.log
+appstore_review/dump.rdb
+
+appstore_review/appstore_review/__pycache__/
