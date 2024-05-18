@@ -163,3 +163,39 @@ LOGGING = {
         },
     },
 }
+
+INSTALLED_APPS += [
+    'django_filters',
+    'rest_framework',
+]
+
+
+# celery 설정
+
+INSTALLED_APPS += [
+    'django_celery_beat',
+    
+    # 'django_celery_results',
+]
+
+# Redis를 Celery 브로커로 설정
+CELERY_BROKER_URL = 'redis://localhost:6379/0'
+# Celery 작업 결과 저장소 설정 (선택 사항)
+CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'
+CELERY_TIMEZONE = 'Asia/Seoul'
+
+CELERY_BEAT_SCHEDULE = {
+    'fetch-reviews-every-3-hours': {
+        'task': 'reviews.tasks.fetch_and_store_reviews_async',
+        'schedule': 10800.0,  # 3시간 (초 단위)
+        'args': ()
+    },
+}
+
+CELERY_TASK_TRACK_STARTED = True  # 태스크 시작 시 상태 확인
+CELERY_TASK_TIME_LIMIT = 300  # 태스크 실행 시간 제한 (초 단위)
+CELERY_TASK_SOFT_TIME_LIMIT = 250  # 태스크 실행 소프트 제한
+CELERY_WORKER_CONCURRENCY = 4  # 동시 실행할 작업 수 제한 (서버 성능에 맞춰 조정)
+
+# CELERY_ACCEPT_CONTENT = ['json']
+# CELERY_TASK_SERIALIZER = 'json'
