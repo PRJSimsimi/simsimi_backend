@@ -15,20 +15,21 @@ EXTERNAL_API_URL = f'https://api.appstoreconnect.apple.com/v1/apps/375239755/cus
 
 # JWT 토큰 생성 함수 (FastAPI 코드에 맞춰서)
 def create_jwt_token():
-    auth_path = 'AppleConnect_AuthKey_G54BYZM5WR.p8'
+    auth_path = os.getenv("APPLE_AUTH_KEY_PATH")
+    
     with open(auth_path, "rb") as authKey:
         signing_key = authKey.read()
         
     token = jwt.encode(
         {
-            'iss': "69a6de70-6b36-47e3-e053-5b8c7c11a4d1",
+            'iss': os.getenv("APPLE_ISS"),
             # 'exp': int(mktime((datetime.now()).timetuple())) + 1200,  # 20분 후 만료
             'exp': int(datetime.now().timestamp()) + 1200,  # 20분 후 만료
             'aud': 'appstoreconnect-v1'
         },
         signing_key,
         algorithm='ES256',
-        headers={'kid': "G54BYZM5WR"}
+        headers={'kid': os.getenv("APPLE_KID")}
     )
     return token
 
