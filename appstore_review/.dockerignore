@@ -1,0 +1,37 @@
+# .dockerignore
+
+# 개발 환경 파일
+.env
+.env.local
+.venv/
+venv/
+
+# 버전 관리 시스템
+.git/
+.gitignore
+
+# 캐시 & 로그
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.log
+
+# IDE 설정
+.vscode/
+.idea/
+
+# 데이터베이스 파일
+*.sqlite3
+*.db
+
+# 정적 파일 (collectstatic으로 별도 관리)
+staticfiles/
+
+# 테스트 파일
+tests/
+test.py
+
+# Docker 관련 파일 (선택적 제외)
+docker-compose.yml
+Dockerfile

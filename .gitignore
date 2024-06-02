@@ -1,16 +1,56 @@
+# 환경 파일
 .env
+.env.local
+.env.example
 
+# IDE 설정
+.idea/
+.vscode/
+.DS_Store
+
+# Python 캐시 & 빌드 파일
+__pycache__/
+**/__pycache__/
+*.pyc
+*.pyo
+
+# 데이터베이스 & Redis
+*.sqlite3
+dump.rdb
+**/dump.rdb
+
+# 로그 파일
+*.log
+logs/
+**/debug.log
+
+# Celery 관련
+celerybeat-schedule.*
+**/celerybeat-schedule.*
+
+# 보안 파일
+AppleConnect_AuthKey_*.p8
 AppleConnect_AuthKey_G54BYZM5WR.p8
 
-**/migrations/
-**/__pycache__/
+# Docker 관련
+docker-compose.override.yml
 
+# 정적 파일 (collectstatic으로 생성)
+staticfiles/
+
+# 배포 설정 파일
+/deploy/nginx/nginx.conf
+/deploy/*.service
+
+# 데이터 파일
+*.csv
 appstore_review/simsimireviewsAnswer.csv
 
-appstore_review/celerybeat-schedule.bak
-appstore_review/celerybeat-schedule.dat
-appstore_review/celerybeat-schedule.dir
-appstore_review/debug.log
-appstore_review/dump.rdb
+# 마이그레이션 파일 (의도적으로 제외시)
+# **/migrations/
 
-appstore_review/appstore_review/__pycache__/
+# 기타
+*.bak
+*.dat
+*.dir
+appstore_review/reviews/migrations/

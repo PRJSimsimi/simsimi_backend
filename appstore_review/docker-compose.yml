@@ -1,0 +1,73 @@
+version: "3.8"
+
+services:
+  # MySQL 데이터베이스
+  db:
+    image: mysql:8.0
+    env_file: .env # .env에서 환경 변수 로드
+    volumes:
+      - db_data:/var/lib/mysql
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_DATABASE: ${DB_NAME}
+      MYSQL_USER: ${DB_USER}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
+    restart: unless-stopped
+
+  # Redis 메시지 브로커
+  redis:
+    image: redis:alpine
+    ports:
+      - "6379:6379"
+    restart: unless-stopped
+
+  # Django 웹 서버
+  web:
+    build: .
+    env_file: .env
+    volumes:
+      - ./logs:/app/logs # ✅ 로그 볼륨
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+      - redis
+    command: gunicorn --bind 0.0.0.0:8000 --workers 3 appstore_review.wsgi:application
+    restart: unless-stopped
+
+  # Celery 워커
+  celery:
+    build: .
+    env_file: .env
+    command: celery -A appstore_review worker --loglevel=info
+    depends_on:
+      - redis
+      - web
+    restart: unless-stopped
+
+  # Celery 스케줄러
+  celery_beat:
+    build: .
+    env_file: .env
+    command: celery -A appstore_review beat --loglevel=info
+    depends_on:
+      - redis
+      - web
+    restart: unless-stopped
+
+  nginx:
+    image: nginx:alpine
+    ports:
+      - "80:80"
+    volumes:
+      - ./config/nginx/app.conf:/etc/nginx/conf.d/default.conf # 설정 파일 마운트
+      - ./staticfiles:/app/staticfiles # 정적 파일 마운트
+      - ./logs/nginx:/var/log/nginx # ✅ Nginx 로그 저장
+    depends_on:
+      - web # 웹 서비스 시작 후 실행
+    restart: unless-stopped
+
+volumes:
+  db_data:

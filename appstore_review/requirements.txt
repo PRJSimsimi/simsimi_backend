@@ -1,0 +1,6 @@
+Django==5.1.4
+celery==5.3.6
+mysqlclient==2.2.1  # RDS MySQL 사용 시
+gunicorn==21.2.0
+whitenoise==6.6.0
+python-dotenv==1.0.0  # 환경변수 관리
