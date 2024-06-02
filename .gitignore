@@ -54,3 +54,5 @@ appstore_review/simsimireviewsAnswer.csv
 *.dat
 *.dir
 appstore_review/reviews/migrations/
+appstore_review/config/celery/celery.service
+appstore_review/config/gunicorn/gunicorn.service
